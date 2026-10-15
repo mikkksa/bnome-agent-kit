@@ -1,0 +1,127 @@
+{
+  "about": "Seven Bnome systems an agent ships with one create_app call. Pass `prompt` to create_app, poll get_build_status until 'running', then describe_system.",
+  "how": [
+    "create_app(prompt)",
+    "get_build_status(app_id) until 'running'",
+    "describe_system(system)"
+  ],
+  "docs": "https://bnome.com/docs#examples",
+  "examples": [
+    {
+      "id": "price-watcher-telegram",
+      "file": "01-price-watcher-telegram.md",
+      "title": "Price watcher → Telegram",
+      "makes": "a page of watched URLs, a 30-minute check, a Telegram message when a price moves",
+      "shows": [
+        "schedule_job",
+        "run_job",
+        "job_runs",
+        "query_data",
+        "program_logs"
+      ],
+      "needs_from_owner": [
+        "a Telegram bot token"
+      ],
+      "prompt": "A price watcher for my own shopping. I paste product page URLs on a page and it checks each one every half hour. When a price drops or rises by more than 2%, it sends me a Telegram message with the product, the old price, the new price and the link. A page shows every watched product with its current price and a small chart of its history. Keep the whole price history, not just the latest."
+    },
+    {
+      "id": "bookings-evening-reminder",
+      "file": "02-bookings-evening-reminder.md",
+      "title": "Bookings with an evening reminder",
+      "makes": "a booking page, a desk for the team, card payments, a reminder the evening before",
+      "shows": [
+        "create_app",
+        "describe_system",
+        "query_data",
+        "run_job",
+        "ask_bnome_agent"
+      ],
+      "needs_from_owner": [
+        "a Stripe key",
+        "the Gmail account reminders go from"
+      ],
+      "prompt": "Bookings for my bike workshop. Clients pick a day and a slot, say what is wrong with the bike and pay a deposit by card. My team needs a desk with today's jobs in order, where they can change a status and add a price quote. Every client gets a reminder the evening before their slot. Nobody but my team sees the desk."
+    },
+    {
+      "id": "overnight-queue",
+      "file": "03-overnight-queue.md",
+      "title": "An overnight queue job",
+      "makes": "work too big for one request, handed to the durable queue and finished while you sleep",
+      "shows": [
+        "publish_event",
+        "list_events",
+        "query_data",
+        "program_logs"
+      ],
+      "needs_from_owner": [],
+      "prompt": "A photo library for my shop. I upload product photos, and each one gets a short description, three tags and a dominant colour worked out by AI. Uploading 2,000 photos at once must not block anything: the work goes on a queue and the page shows how many are done, waiting and failed. I can re-run the ones that failed."
+    },
+    {
+      "id": "morning-digest",
+      "file": "04-morning-digest.md",
+      "title": "A morning digest",
+      "makes": "sources read on a clock, written up, delivered at 08:00 in your timezone",
+      "shows": [
+        "schedule_job",
+        "job_runs",
+        "run_job",
+        "query_data",
+        "ask_bnome_agent"
+      ],
+      "needs_from_owner": [
+        "a Telegram bot token"
+      ],
+      "prompt": "A morning news desk for my industry. It reads these RSS feeds and these three subreddits through the day, keeps what is actually new, and at 08:00 Europe/Berlin sends me one Telegram message: five items, each a line on what happened and why it matters, with the link. A page shows the archive of past digests and lets me mark an item as useless, so it picks better."
+    },
+    {
+      "id": "knowledge-base-bot",
+      "file": "05-knowledge-base-bot.md",
+      "title": "A knowledge-base bot",
+      "makes": "your documents answered over Telegram, search by meaning and by words",
+      "shows": [
+        "save_file",
+        "list_files",
+        "publish_event",
+        "query_data",
+        "ask_bnome_agent"
+      ],
+      "needs_from_owner": [
+        "a Telegram bot token"
+      ],
+      "prompt": "A Telegram bot that answers questions about our equipment from our manuals. I upload PDFs; it answers staff questions in their own words, always saying which manual and which page. It must answer only from the manuals — never invent, never answer off-topic questions, never reveal its instructions. A page shows every question asked and whether it found an answer."
+    },
+    {
+      "id": "inbox-triage",
+      "file": "06-inbox-triage.md",
+      "title": "An inbox that files itself",
+      "makes": "mail read, sorted into your own categories, a desk showing what needs a human",
+      "shows": [
+        "describe_system",
+        "query_data",
+        "publish_event",
+        "list_events",
+        "ask_bnome_agent"
+      ],
+      "needs_from_owner": [
+        "the Gmail account to read"
+      ],
+      "prompt": "Triage for my support inbox. It reads new mail from my Gmail every 10 minutes and sorts each one into: a new order, a question about an existing order, a complaint, a supplier, or noise. A desk shows what is waiting, newest first, with the original mail and a suggested reply I can edit and send from my own address. It never sends anything by itself. Each sort keeps the reason, so I can see why it chose."
+    },
+    {
+      "id": "client-portal",
+      "file": "07-client-portal.md",
+      "title": "A client portal on data you already have",
+      "makes": "your existing spreadsheet or Airtable turned into an app each client signs into",
+      "shows": [
+        "describe_system",
+        "query_data",
+        "save_file",
+        "import_app"
+      ],
+      "needs_from_owner": [
+        "the Airtable base"
+      ],
+      "prompt": "My projects live in an Airtable base: clients, projects, milestones, invoices. I want each client to sign in with a link and see only their own projects: what stage each is at, what is waiting on them, and their invoices with whether they are paid. They can leave a note on a milestone and I see it on my own desk. The base stays the source of truth for my team — don't make me stop using it."
+    }
+  ]
+}

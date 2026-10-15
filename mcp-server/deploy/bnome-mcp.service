@@ -1,0 +1,20 @@
+# systemd unit for your own MCP server. Adjust the user and the paths.
+#   sudo cp bnome-mcp.service /etc/systemd/system/
+#   sudo systemctl enable --now bnome-mcp
+
+[Unit]
+Description=Bnome MCP server (thin wrapper over the Bnome REST API)
+After=network.target
+
+[Service]
+Type=simple
+User=YOUR_USER
+WorkingDirectory=/srv/bnome-mcp
+Environment=BNOME_API_BASE=https://bnome.com/api
+Environment=BNOME_MCP_PORT=8010
+ExecStart=/srv/bnome-mcp/venv/bin/python /srv/bnome-mcp/mcp_server.py
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target

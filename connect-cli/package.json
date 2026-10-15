@@ -1,0 +1,31 @@
+{
+  "name": "@bnome/connect",
+  "version": "0.1.1",
+  "description": "Connect Bnome to your AI agent (Claude, Cursor, Codex, Windsurf) — logs you in and wires the Bnome MCP server into the agent's config.",
+  "bin": {
+    "bnome-connect": "bin/cli.js"
+  },
+  "type": "module",
+  "engines": {
+    "node": ">=18"
+  },
+  "files": [
+    "bin",
+    "src"
+  ],
+  "keywords": [
+    "bnome",
+    "mcp",
+    "claude",
+    "cursor",
+    "codex",
+    "windsurf",
+    "ai-agent",
+    "app-builder"
+  ],
+  "homepage": "https://bnome.com",
+  "publishConfig": {
+    "access": "public"
+  },
+  "license": "MIT"
+}
