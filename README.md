@@ -46,7 +46,7 @@ of your agents can work on one system at once without overwriting each other.
 | `set_setting` · `program_logs` | a program's own settings and keys; what it wrote when something broke |
 | `ask_bnome_agent` · `agent_status` | have Bnome's agent write and ship the code |
 | `create_app` · `import_app` · `modify_app` · `get_build_status` · `list_my_apps` · `set_slug` | build from a sentence, or bring a public GitHub repo over |
-| studios | images, video, music, transcripts, clips, films, try-on |
+| `get_credits` | the owner's credit balance; building and running spend it |
 
 Full reference: [`spec/09-tools.md`](spec/09-tools.md).
 

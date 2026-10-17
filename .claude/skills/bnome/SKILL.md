@@ -81,8 +81,7 @@ request and then poll `agent_status` — don't send a stream of corrections.
 
 - **Money and messages wait for a person.** Before anything that charges a card or
   writes to a customer, check for a dry run and confirm with the user.
-- **Say the cost** before an expensive studio run: `list_models`, `get_credits`. A credit
-  is a cent.
+- **Building spends credits.** `get_credits` shows the balance. A credit is a cent.
 - **A connector that says "waiting for the owner to sign in"** is not a bug to debug. The
   feature is idle on purpose; give the user the link.
 - **An outside service's key never goes in `set_setting`** — that is for a program's own

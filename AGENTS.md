@@ -62,8 +62,8 @@ from its own contract, every table with its columns, and every job with its id. 
 a table name or a job id is the most common wasted call.
 
 **Money and messages wait for a person.** Anything that charges a card or writes to a
-customer should be run dry first and confirmed. Say the cost before an expensive studio
-run (`list_models`, `get_credits`).
+customer should be run dry first and confirmed. Building spends the owner's credits;
+`get_credits` shows the balance.
 
 ## What it cannot do yet
 

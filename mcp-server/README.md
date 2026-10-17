@@ -38,8 +38,8 @@ streamable HTTP, so `proxy_buffering off` and a long read timeout matter.
 
 Two groups of routes, both taking the caller's own account token:
 
-- **the builder and the studios** — `/api/workspaces`, `/api/apps`, `/api/studio`,
-  `/api/films`, `/api/transcribe`, `/api/clips`, which have been there since the start;
+- **the builder** — `/api/workspaces`, `/api/apps`, `/api/imports`, and the credit
+  balance, which have been there since the start;
 - **the runtime** — `/api/agent/*`, the owner-facing twin of the two doors a system's
   own programs and agent use from inside. It serves the map of a system, a read-only SQL
   query over anything it keeps, its topics, and its programs' log files. Jobs

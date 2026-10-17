@@ -107,57 +107,9 @@ List all apps owned by the authenticated Bnome user (id, name, status, live_url)
 **`set_slug(app_id: str, slug: str)`**  
 Set a human-readable vanity subdomain for an app -> https://<slug>.bnome.app/.
 
-## The studios
+## Credits
 
-Media made on the owner's credits. Check `list_models` and say the cost before an expensive run.
-
-**`generate_image(prompt: str, model: str = 'bnome/image', aspect_ratio: Literal['1:1', '16:9', '9:16', '4:3', '3:4', '3:2', '2:3'] | None = None, reference_images: list[str] | None = None, public: bool = False, wait_seconds: int = 60)`**  
-Generate an image in Bnome's image studio. Spends credits (see list_models).
-
-**`generate_video(prompt: str, model: str = 'bnome/video', aspect_ratio: Literal['16:9', '9:16', '1:1'] = '16:9', duration_sec: Literal[4, 8, 12] = 8, public: bool = False, wait_seconds: int = 0)`**  
-Generate a video clip in Bnome's video studio. Paid plans only; spends credits.
-
-**`generate_music(prompt: str, instrumental: bool = False, title: str | None = None, style: str | None = None, public: bool = False, wait_seconds: int = 0)`**  
-Make a song in Bnome's music studio (Suno), with generated cover art. Spends credits.
-
-**`transcribe(audio_url: str, wait_seconds: int = 0)`**  
-Transcribe audio or video by public URL, with speakers and language detection.
-
-**`derive_document(id: str, kind: Literal['summary', 'article', 'social', 'meeting_notes'])`**  
-Turn a finished transcript into a summary, an article, social posts or meeting notes.
-
-**`make_clips(video_url: str, count: int = 5, reframe: bool = True)`**  
-Cut a long video into short vertical clips (15-75 seconds each) around its best moments.
-
-**`make_film(idea: str, aspect_ratio: Literal['16:9', '9:16'] = '16:9', length: Literal['short', 'medium', 'long'] = 'medium', music: bool = True, frame_model: Literal['bnome/image-nano', 'bnome/image', 'bnome/image-flux', 'bnome/image-seedream'] = 'bnome/image-nano', shot_model: Literal['bnome/video', 'bnome/video-kling', 'bnome/video-kling-pro', 'bnome/video-veo'] = 'bnome/video')`**  
-Make a short film from an idea, with characters and a look that stay consistent.
-
-**`get_film(id: str)`**  
-A film's progress: plan, characters, key frames, shots, poster and the finished film.
-
-**`redraw_frame(id: str, index: int, description: str | None = None, model: Literal['bnome/image-nano', 'bnome/image', 'bnome/image-flux', 'bnome/image-seedream'] | None = None)`**  
-Redraw one key frame of a film before it is shot, optionally with a new description or model.
-
-**`shoot_film(id: str, model: Literal['bnome/video', 'bnome/video-kling', 'bnome/video-kling-pro', 'bnome/video-veo'] | None = None)`**  
-Step 2: shoot a film whose storyboard is ready. Each shot moves from its first key frame to its last; the score and poster are made alongside and ffmpeg joins it all. Takes a few minutes: poll get_film until 'done', then share film_url and poster_url.
-
-**`try_on(person_image_url: str, item_urls: list[str], notes: str | None = None, wait_seconds: int = 60)`**  
-Virtual try-on: a photo of a person and 1-3 clothing items become one realistic photo of that person wearing them. Items can be image links or product page links (their og:image is used). Use only photos of the user or of people who agreed. Private; about 2 credits.
-
-**`get_job(id: str, kind: Literal['image', 'video', 'music', 'transcript', 'clips'], wait_seconds: int = 0)`**  
-Check a studio job and get its result once done (media url, transcript or clips).
-
-**`list_creations(kind: Literal['image', 'video', 'music', 'transcript', 'clips', 'app'], limit: int = 24)`**  
-List the user's own creations of one kind, newest first.
-
-**`set_visibility(id: str, public: bool)`**  
-Show or hide an image, video or song in Bnome's public Explore gallery.
-
-**`delete_creation(id: str, kind: Literal['image', 'video', 'music', 'clips'], confirm: bool)`**  
-Permanently delete an image, video, song or clips set. Ask the user first.
-
-**`list_models(kind: Literal['image', 'video', 'music'] | None = None)`**  
-List Bnome's studio models with their price in credits and when to use each.
+Building and running spend the owner's Bnome credits. A credit is a cent.
 
 **`get_credits()`**  
 The user's Bnome credit balance: remaining, included, purchased, used and plan tier.
