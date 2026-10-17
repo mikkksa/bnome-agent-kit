@@ -1,0 +1,17 @@
+{
+  "name": "bnome",
+  "owner": {
+    "name": "Bnome",
+    "email": "hello@bnome.com"
+  },
+  "metadata": {
+    "description": "Bnome's plugin for Claude: build and run software that keeps working on its own."
+  },
+  "plugins": [
+    {
+      "name": "bnome",
+      "source": "./plugin",
+      "description": "Ship software that keeps running: apps with their own databases, durable queues, scheduled jobs and files, built by Bnome's agent or worked on by yours."
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "name": "bnome",
+  "displayName": "Bnome",
+  "version": "0.1.0",
+  "description": "Ship software that keeps running: Bnome's agent builds apps with their own databases, durable queues, scheduled jobs and files, and your agent can read their data, queue work, schedule jobs and read their logs.",
+  "author": {
+    "name": "Bnome",
+    "email": "hello@bnome.com",
+    "url": "https://bnome.com"
+  },
+  "homepage": "https://bnome.com/docs#mcp",
+  "repository": "https://github.com/mikkksa/bnome-agent-kit",
+  "license": "MIT",
+  "keywords": ["apps", "hosting", "deploy", "database", "queues", "cron", "scheduled-jobs", "agents"],
+  "icon": "./logo.png",
+  "documentationUrl": "https://bnome.com/docs#mcp",
+  "supportUrl": "https://github.com/mikkksa/bnome-agent-kit/issues",
+  "privacyPolicyUrl": "https://bnome.com/privacy",
+  "termsOfServiceUrl": "https://bnome.com/terms"
+}
