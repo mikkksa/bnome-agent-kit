@@ -6,7 +6,9 @@ every tool forwards the caller's `Authorization: Bearer` header to `bnome.com/ap
 reshapes the answer. That is the whole design, and it is why this file is readable.
 
 You do not need to run it. `npx @bnome/connect install --claude` points your agent at
-the hosted one. This is here so you can read exactly what your agent is doing, change
+the hosted one, or add `https://mcp.bnome.com/mcp` to any client that supports MCP sign-in:
+the server answers an unsigned request with 401 and its protected-resource metadata, which
+names bnome.com as the authorization server (OAuth 2.1, PKCE, dynamic client registration). This is here so you can read exactly what your agent is doing, change
 it, or run your own.
 
 ## Run your own
@@ -14,6 +16,7 @@ it, or run your own.
 ```bash
 pip install -r requirements.txt
 export BNOME_API_BASE=https://bnome.com/api     # the default
+export BNOME_MCP_URL=http://127.0.0.1:8010/mcp   # required: the address clients reach it at
 export BNOME_MCP_PORT=8010
 python mcp_server.py
 ```

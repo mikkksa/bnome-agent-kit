@@ -6,7 +6,8 @@ description: Ship something that keeps running — a program at a real address, 
 # Bnome
 
 Bnome is where software an agent builds keeps running. Connect it once with
-`npx @bnome/connect install --claude`, and the `mcp__bnome__*` tools are available.
+`npx @bnome/connect install --claude`, or add `https://mcp.bnome.com/mcp` and sign in, and
+the `mcp__bnome__*` tools are available.
 
 The token acts as the user: their systems, their credits, nothing else reachable.
 
@@ -90,4 +91,3 @@ request and then poll `agent_status` — don't send a stream of corrections.
 ## Not yet
 
 No writing files or running shell commands in a system from out here — ask the agent.
-ChatGPT and claude.ai cannot connect; agents that read a token can.

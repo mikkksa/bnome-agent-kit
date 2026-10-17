@@ -18,6 +18,16 @@ That opens bnome.com, you press **Approve**, and your agent has the tools below.
 token acts as you: your systems, your credits, nothing else reachable. Take it back any
 time with **Sign out AI agents** on your profile.
 
+Or add the server and sign in, with nothing to install:
+
+```bash
+claude mcp add --transport http bnome https://mcp.bnome.com/mcp   # Claude Code opens a Bnome sign-in
+```
+
+Any client that supports MCP sign-in (OAuth 2.1 with PKCE) uses the same address. In Claude Code
+there is also a plugin with the skill and the server together:
+`/plugin install bnome --marketplace mikkksa/bnome-agent-kit`.
+
 ---
 
 ## Two ways to work, and they mix
@@ -77,9 +87,9 @@ prompts that produce a whole working system.
 - **This kit is MIT. Bnome itself is not open source** — it is a hosted platform, and
   these tools talk to it. Everything here is free to read, fork, and point at your own
   deployment if you run the server yourself.
-- **ChatGPT and claude.ai cannot connect yet.** They take an external MCP server only
-  through a hosted sign-in (OAuth), which Bnome does not have. Agents that read a token
-  — Claude Code, Cursor, Codex, Windsurf — work today.
+- **Sign-in is OAuth, or a token.** Clients that support MCP sign-in sign in at bnome.com in
+  the browser; for agents that read a token, the installer pastes one. **Sign out AI agents**
+  on your profile withdraws both.
 - **Your agent cannot write code into a system from out here yet.** It asks Bnome's
   agent, which has the whole system mounted. Direct file and shell access from outside is
   the next thing being built.

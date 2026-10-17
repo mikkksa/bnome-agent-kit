@@ -14,25 +14,83 @@ The studio tools (images, video, music, transcripts, clips, film, try-on) were t
 on 2026-10-17; they live on in Hedgehog. Their code is at commit 4461b7b.
 
 Run:  python mcp_server.py            (http transport, port 8010, path /mcp)
-Auth: the agent config supplies  Authorization: Bearer <bnome_jwt>  in headers.
+Auth: OAuth 2.1, as the MCP authorization spec has it. This server is the protected resource: a request
+without a token Bnome's API takes gets 401 pointing at this server's protected-resource metadata, which
+names the site as the authorization server (backend routers/oauth.py). Clients that sign in there
+(claude.ai, ChatGPT, Claude Code) and agents `npx @bnome/connect` set up send the same kind of token:
+Authorization: Bearer <agent token>. BNOME_MCP_URL is this server's public address.
 """
 import os
 import asyncio
+import hashlib
+import time
 from typing import Literal
-from urllib.parse import quote
+from urllib.parse import quote, urlparse
 
 import httpx
 from fastmcp import FastMCP
+from fastmcp.server.auth import AccessToken, RemoteAuthProvider, TokenVerifier
 from fastmcp.server.dependencies import get_http_headers
+from pydantic import AnyHttpUrl
+from starlette.routing import Route
 
 API_BASE = os.environ.get("BNOME_API_BASE", "https://bnome.com/api").rstrip("/")
 SITE_BASE = API_BASE.rsplit("/api", 1)[0]
 HOST = os.environ.get("BNOME_MCP_HOST", "127.0.0.1")
 PORT = int(os.environ.get("BNOME_MCP_PORT", "8010"))
+# This server's public address: the resource MCP clients sign in for (https://mcp.bnome.com/mcp).
+MCP_URL = urlparse(os.environ["BNOME_MCP_URL"])
+
+
+class BnomeTokens(TokenVerifier):
+    """A bearer token is good when Bnome's API takes it: an agent token, from the OAuth consent page or
+    `npx @bnome/connect`, or an account's own session. The API's yes is kept 30 seconds so a busy session
+    doesn't ask on every message; every tool call still sends the token to the API, which checks it again,
+    so «Sign out AI agents» stops the tools at once and this door within the 30 seconds."""
+
+    KEEP_SECONDS = 30
+
+    def __init__(self):
+        super().__init__(required_scopes=["agent"])
+        self._known: dict[str, tuple[float, AccessToken]] = {}
+
+    async def verify_token(self, token: str) -> AccessToken | None:
+        key = hashlib.sha256(token.encode()).hexdigest()
+        now = time.monotonic()
+        known = self._known.get(key)
+        if known and known[0] > now:
+            return known[1]
+        async with httpx.AsyncClient(timeout=15.0) as client:
+            r = await client.get(f"{API_BASE}/auth/me", headers={"Authorization": f"Bearer {token}"})
+        if r.status_code == 401:
+            return None
+        r.raise_for_status()
+        user = r.json()["id"]
+        access = AccessToken(token=token, client_id=user, subject=user, scopes=["agent"])
+        self._known = {k: v for k, v in self._known.items() if v[0] > now}
+        self._known[key] = (now + self.KEEP_SECONDS, access)
+        return access
+
+
+class BnomeAuth(RemoteAuthProvider):
+    """The protected-resource metadata (RFC 9728) at both addresses clients look: the path form the 401
+    names (/.well-known/oauth-protected-resource/mcp) and the root form some clients try first."""
+
+    def get_routes(self, mcp_path: str | None = None) -> list[Route]:
+        routes = super().get_routes(mcp_path)
+        return routes + [Route("/.well-known/oauth-protected-resource", endpoint=r.endpoint, methods=r.methods)
+                         for r in routes if r.path.startswith("/.well-known/oauth-protected-resource/")]
 
 
 mcp = FastMCP(
     name="Bnome",
+    auth=BnomeAuth(
+        token_verifier=BnomeTokens(),
+        authorization_servers=[AnyHttpUrl(SITE_BASE)],
+        base_url=f"{MCP_URL.scheme}://{MCP_URL.netloc}",
+        resource_name="Bnome",
+        resource_documentation=AnyHttpUrl(f"{SITE_BASE}/docs"),
+    ),
     instructions=(
         "Bnome builds and runs software: apps and the systems around them, each with its own databases, "
         "durable queues, scheduled jobs and files. create_app and import_app start Bnome's build agent on a new "
@@ -594,4 +652,4 @@ async def agent_status(system: str, limit: int = 6) -> dict:
                           "at": m.get("created_at")} for m in latest]}
 
 if __name__ == "__main__":
-    mcp.run(transport="http", host=HOST, port=PORT)
+    mcp.run(transport="http", host=HOST, port=PORT, path=MCP_URL.path)

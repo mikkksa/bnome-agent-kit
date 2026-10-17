@@ -4,7 +4,8 @@ You can write a program. Bnome is where it lives afterwards: an address, a datab
 queues that survive a restart, work on a clock, files, and a place the owner can look.
 
 Connect once — `npx @bnome/connect install --codex` (or `--claude`, `--cursor`,
-`--windsurf`) — and the tools below are yours. The token acts as the person who
+`--windsurf`), or add `https://mcp.bnome.com/mcp` as an MCP server and sign in — and the
+tools below are yours. The token acts as the person who
 approved it: their systems, their credits, nothing else reachable.
 
 ## When to reach for it
@@ -69,7 +70,6 @@ customer should be run dry first and confirmed. Building spends the owner's cred
 
 - You cannot write files or run shell commands in a system from out here. Ask
   `ask_bnome_agent`.
-- ChatGPT and claude.ai cannot connect: they need a hosted sign-in Bnome does not have.
 - Credits are real money. A credit is a cent.
 
 Full reference: [`spec/`](spec/) · worked examples: [`examples/`](examples/) ·
