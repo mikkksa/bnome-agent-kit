@@ -150,8 +150,8 @@ async def create_app(prompt: str, name: str | None = None) -> dict:
     """Create a brand-new Bnome app from a natural-language prompt.
 
     Spins up a workspace and starts an asynchronous build. Returns immediately with
-    workspace_id + app_id and status='building'. Poll get_build_status(app_id) until
-    it becomes 'running' (the app is live at its live_url) or 'error'.
+    workspace_id + app_id and status='building'. get_build_status(app_id) reports the
+    build: 'running' once the app is live at its live_url, or 'error'.
 
     Args:
         prompt: What to build, e.g. "a habit tracker with streaks and a dark theme".
@@ -196,8 +196,8 @@ async def import_app(
     Bnome's build agent ports it to the Bnome stack (Vite + React frontend, FastAPI +
     SQLite backend, AI calls through the Bnome gateway so no API keys are needed),
     keeping its screens, features and look, and writes IMPORT_NOTES.md in the app with
-    what changed. Starts in the background like create_app: poll
-    get_build_status(app_id) until 'running' or 'error' (porting can take 10-30 minutes).
+    what changed. It runs in the background like create_app, and
+    get_build_status(app_id) reports it ('running' or 'error'); porting takes 10-30 minutes.
     Counts as one app against the plan's app limit. Repos up to 100 MB as a zip.
 
     Args:
@@ -219,7 +219,8 @@ async def get_build_status(app_id: str) -> dict:
     """Check an app's current build/run status.
 
     Returns the app record including 'status' (building | running | preview | error |
-    stopped) and 'live_url' once it is live. Poll this after create_app or modify_app.
+    stopped) and 'live_url' once it is live: the state of a build create_app, import_app
+    or modify_app started.
     """
     app = await _req("GET", f"/apps/{app_id}")
     return {
@@ -253,7 +254,7 @@ async def modify_app(workspace_id: str, prompt: str) -> dict:
 
     Sends the request into the app's workspace chat, which triggers the modification
     agent. The app must be in 'running' status. Returns immediately with status='building';
-    poll get_build_status(app_id) until it is 'running' again.
+    get_build_status(app_id) reports when it is 'running' again.
 
     Args:
         workspace_id: The workspace that owns the app (from create_app / list context).
@@ -302,7 +303,7 @@ async def list_systems() -> dict:
     """List the user's systems (spaces): each one's id, name and the programs it runs.
 
     A system is a live thing on Bnome: one or more programs with their own addresses, databases,
-    queues, scheduled jobs, files and connected services. Start here, then describe_system.
+    queues, scheduled jobs, files and connected services. describe_system gives one of them whole.
     """
     return await _req("GET", "/agent/systems")
 
@@ -393,9 +394,9 @@ async def publish_event(
 
     The platform keeps the message, brings it to every program that handles the topic, and tries
     again (after 10 s, 30 s, 2 min, 10 min, 30 min, 2 h, 6 h) until it is handled, so nothing is
-    lost to a restart. This is how work gets queued between programs; use it to hand a program work
-    the same way its sibling would. The topics a system has, and who handles them, are in
-    describe_system.
+    lost to a restart. This is how work gets queued between programs: a message put here reaches a
+    program exactly as one from its sibling would. The topics a system has, and who handles them, are
+    in describe_system.
 
     Args:
         system: System id.
@@ -403,7 +404,7 @@ async def publish_event(
         from_program: Which program the message is recorded as coming from (slug, name or id) —
             it is kept and shown exactly as that program's own code sending it.
         data: The message body, usually an object with the ids the handler needs.
-        key: Send the same key twice and it stays one message. Use it to make a retry safe.
+        key: The same key sent twice stays one message, which makes a retry safe.
     """
     body = {"topic": topic, "data": data, "from_program": from_program, "key": key}
     return await _req("POST", f"/agent/systems/{system}/events", json=body)
@@ -431,28 +432,26 @@ async def schedule_job(
     every_minutes: int | None = None,
     daily_at: str | None = None,
     timezone: str = "UTC",
-    method: Literal["POST", "GET", "PUT", "PATCH", "DELETE"] = "POST",
     description: str | None = None,
 ) -> dict:
     """Have the platform call one of a program's own routes on a clock — a scheduled job.
 
     The job belongs to the program and is called with the program's own token, so the route can be
-    the program's and nobody else's. Say either every_minutes or daily_at. Name it in the owner's
-    words: they read it on their canvas.
+    the program's and nobody else's. The platform calls it with POST, either every_minutes or at
+    daily_at. Its name is what the owner reads on their canvas.
 
     Args:
         system: System id.
         program: Which program (slug, name or id).
-        name: What this does, in the owner's words, e.g. "Send tomorrow's reminders".
+        name: What this does, as the owner reads it, e.g. "Send tomorrow's reminders".
         path: The program's own route the platform calls, e.g. /api/jobs/reminders.
         every_minutes: Every N minutes (at least what the platform allows).
         daily_at: Once a day at HH:MM.
         timezone: The timezone daily_at is read in, e.g. Europe/Moscow.
-        method: HTTP method for the call.
         description: A longer note for the owner.
     """
     app_id = await _program_id(system, program)
-    body = {"app_id": app_id, "name": name, "path": path, "method": method, "timezone": timezone,
+    body = {"app_id": app_id, "name": name, "path": path, "timezone": timezone,
             "every_minutes": every_minutes, "daily_at": daily_at, "description": description}
     return await _req("POST", "/jobs", json={k: v for k, v in body.items() if v is not None})
 
@@ -471,7 +470,7 @@ async def run_job(job_id: str) -> dict:
 async def job_runs(job_id: str, limit: int = 20) -> dict:
     """The last runs of a scheduled job: when each ran, how long it took, and what it answered.
 
-    Where to look when work that should happen on a clock did not.
+    It shows whether work that should happen on a clock did.
 
     Args:
         job_id: The job's id, from describe_system (programs[].jobs[].job).
@@ -491,7 +490,7 @@ async def set_job(job_id: str, enabled: bool | None = None, every_minutes: int |
         every_minutes: New interval.
         daily_at: New time of day, HH:MM.
         path: The program's route it calls.
-        name: What it does, in the owner's words.
+        name: What it does, as the owner reads it.
     """
     body = {"enabled": enabled, "every_minutes": every_minutes, "daily_at": daily_at, "path": path, "name": name}
     return await _req("PATCH", f"/jobs/{job_id}", json={k: v for k, v in body.items() if v is not None})
@@ -554,7 +553,7 @@ async def save_file(system: str, name: str, folder: str = "", text: str | None =
 
 @mcp.tool(title="Delete a job", annotations={"title": "Delete a job", "readOnlyHint": False, "destructiveHint": True, "idempotentHint": True, "openWorldHint": False})
 async def delete_job(job_id: str) -> dict:
-    """Remove a scheduled job. Use set_job(enabled=False) instead to keep it but stop it running.
+    """Remove a scheduled job. set_job(enabled=False) stops a job without removing it.
 
     Args:
         job_id: The job's id, from describe_system (programs[].jobs[].job).
@@ -579,8 +578,8 @@ async def delete_file(system: str, file: str) -> dict:
 async def program_logs(system: str, program: str, file: str = "", lines: int = 80) -> dict:
     """The last lines a program wrote — its backend, its last frontend build, each of its workers.
 
-    Where to look first when something is wrong: a program's servers write to log files beside
-    their code, not to the container's output.
+    A program's servers write to log files beside their code, not to the container's output; these
+    are those files.
 
     Args:
         system: System id.
@@ -600,8 +599,8 @@ async def set_setting(system: str, program: str, key: str, value: str, secret: b
     environment once, when it starts, so a change needs a restart to take effect (ask_bnome_agent
     can do that, or the owner's Restart button).
 
-    An API key for an outside service does NOT belong here: a system reaches outside services
-    through its connectors, so the key stays with the connector and every program can use it.
+    Outside services are reached through the system's connectors, which keep their own keys; this is
+    for a program's own configuration.
 
     Args:
         system: System id.
@@ -617,15 +616,12 @@ async def set_setting(system: str, program: str, key: str, value: str, secret: b
 
 @mcp.tool(title="Ask Bnome's agent to change a system", annotations={"title": "Ask Bnome's agent to change a system", "readOnlyHint": False, "destructiveHint": True, "idempotentHint": False, "openWorldHint": False})
 async def ask_bnome_agent(system: str, message: str) -> dict:
-    """Ask Bnome's own agent — the one that writes and ships this system's code — to build or change something.
+    """Send a request to Bnome's own agent — the one that writes and ships this system's code — to build or change something.
 
-    Use this for anything that needs the system's code written, a new program, a service started, or
-    the system checked and published: that agent has the whole system mounted and the platform's
-    hands. Say the outcome and the limits, not the steps. It works in the background for minutes;
-    agent_status(system) shows how far it is and what it answered.
-
-    Every message is an edit of the owner's plan and spends their credits, so send one clear
-    request, not a stream of them. Write it in the owner's language.
+    That agent has the whole system mounted and the platform's hands: it writes the code, adds
+    programs and services, and checks and publishes the system. It works in the background for
+    minutes; agent_status(system) shows how far it is and what it answered. Each request is an edit
+    of the owner's plan and spends their credits.
 
     Args:
         system: System id.

@@ -37,7 +37,7 @@ What a system put on its topics lately, and how each delivery went (done, waitin
 
 Job ids are in `describe_system` at `programs[].jobs[].job`. See [04-jobs.md](04-jobs.md).
 
-**`schedule_job(system: str, program: str, name: str, path: str = '/api/job', every_minutes: int | None = None, daily_at: str | None = None, timezone: str = 'UTC', method: Literal['POST', 'GET', 'PUT', 'PATCH', 'DELETE'] = 'POST', description: str | None = None)`**  
+**`schedule_job(system: str, program: str, name: str, path: str = '/api/job', every_minutes: int | None = None, daily_at: str | None = None, timezone: str = 'UTC', description: str | None = None)`**  
 Have the platform call one of a program's own routes on a clock — a scheduled job.
 
 **`run_job(job_id: str)`**  
@@ -50,7 +50,7 @@ The last runs of a scheduled job: when each ran, how long it took, and what it a
 Change or switch off a scheduled job.
 
 **`delete_job(job_id: str)`**  
-Remove a scheduled job. Use set_job(enabled=False) instead to keep it but stop it running.
+Remove a scheduled job. set_job(enabled=False) stops a job without removing it.
 
 ## Its files
 
@@ -80,7 +80,7 @@ The last lines a program wrote — its backend, its last frontend build, each of
 One writer, so your agents never conflict. Say the outcome and the limits, not the steps. Spends an edit and the owner's credits.
 
 **`ask_bnome_agent(system: str, message: str)`**  
-Ask Bnome's own agent — the one that writes and ships this system's code — to build or change something.
+Send a request to Bnome's own agent — the one that writes and ships this system's code — to build or change something.
 
 **`agent_status(system: str, limit: int = 6)`**  
 What Bnome's own agent is doing in a system, and what it last said.
